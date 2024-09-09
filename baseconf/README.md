@@ -3,7 +3,7 @@
 Package for using base simple text file with configuration.
 File consists pairs "key = value".
 
-To use pack, is enough to pass the structure (which describes the configuration).
+To use pack, is enough to pass the structure (which describes the configuration), structure parameters types and string values must match and be convertible. .
 The configuration structure should have public/exported parameters and this tags:
 * "cfg" - with name of parameter in conf file (w/o spaces)
 * "descr" - with any descriptions/comments for parameter
