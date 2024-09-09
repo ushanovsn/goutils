@@ -5,9 +5,11 @@ File consists pairs "key = value".
 
 To use pack, is enough to pass the structure (which describes the configuration).
 The configuration structure should have public/exported parameters and this tags:
-    * "cfg" - with name of parameter in conf file (w/o spaces)
-    * "descr" - with any descriptions/comments for parameter
+* "cfg" - with name of parameter in conf file (w/o spaces)
+* "descr" - with any descriptions/comments for parameter
 Script use parameters and will read the config file and associate config struct or create new file using tags.
+
+</br>
 
 Added simple interfaces for incoming objects:
 
