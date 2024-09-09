@@ -72,7 +72,10 @@ func New(fName string, t DataType, pass string) (*ParamsObj, error) {
 			}
 			f.Close()
 			// write first line with type
-			p.SetValue(defTypeParamName, fmt.Sprintf("%v", t))
+			err = p.SetValue(defTypeParamName, fmt.Sprintf("%v", t))
+			if err != nil {
+				return nil, err
+			}
 		} else {
 			return nil, fmt.Errorf("Access file error: \"%s\"", err.Error())
 		}
