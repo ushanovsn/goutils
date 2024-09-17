@@ -34,7 +34,7 @@ type ParamsObj struct {
 	wDir       string
 	encryptKey string
 	typeData   DataType
-	mtx        *sync.Mutex
+	mtx        sync.RWMutex
 }
 
 // Init new ParamObject
@@ -47,7 +47,6 @@ func New(fName string, t DataType, pass string) (*ParamsObj, error) {
 		fileName:   fName,
 		typeData:   t,
 		encryptKey: pass,
-		mtx:        &sync.Mutex{},
 	}
 
 	// check file name
@@ -213,8 +212,8 @@ func (obj *ParamsObj) writeValue(n string, val string) error {
 // Reading file, searching by name and return encoding value. Error when not found.
 func (obj *ParamsObj) readValue(n string) (val string, err error) {
 	// block mutex for all period of reading file
-	obj.mtx.Lock()
-	defer obj.mtx.Unlock()
+	obj.mtx.RLock()
+	defer obj.mtx.RUnlock()
 
 	// open file with params
 	f, err := os.Open(obj.fileName)
