@@ -28,12 +28,15 @@ const defTypeParamName = "CurrentDataTypeForParameters"
 //
 // Params read from file when Get() and write into file when Set(), i.e. file not blocked all time.
 // This pack for slow access and careful storage. Encryption option is available.
+// Values can safety caching.
 // First line in the file is DataType parameter.
 type ParamsObj struct {
 	fileName   string
 	wDir       string
 	encryptKey string
 	typeData   DataType
+	useCache   bool
+	cachedData map[string]string
 	mtx        sync.RWMutex
 }
 
@@ -86,6 +89,29 @@ func New(fName string, t DataType, pass string) (*ParamsObj, error) {
 	}
 
 	return &p, nil
+}
+
+// Enabling caching data. Read and written data will be cached
+func (obj *ParamsObj) EnableCache() {
+	if !obj.useCache {
+		obj.useCache = true
+		obj.cachedData = make(map[string]string)
+	}
+}
+
+// Disabling caching data. Cache will be cleared
+func (obj *ParamsObj) DisableCache() {
+	if obj.useCache {
+		obj.useCache = false
+		obj.cachedData = nil
+	}
+}
+
+// Clear existing cache
+func (obj *ParamsObj) ClearCache() {
+	if obj.useCache {
+		obj.cachedData = make(map[string]string)
+	}
 }
 
 // Writing a parameter to a file. The name starting with letter, can consist of letters, numbers, and symbols "-", "_".
@@ -206,6 +232,11 @@ func (obj *ParamsObj) writeValue(n string, val string) error {
 		return err
 	}
 
+	// now no errors - save to cache
+	if obj.useCache {
+		obj.cachedData[n] = val
+	}
+
 	return nil
 }
 
@@ -214,6 +245,13 @@ func (obj *ParamsObj) readValue(n string) (val string, err error) {
 	// block mutex for all period of reading file
 	obj.mtx.RLock()
 	defer obj.mtx.RUnlock()
+
+	// check cache
+	if obj.useCache {
+		if val, ok := obj.cachedData[n]; ok {
+			return val, nil
+		}
+	}
 
 	// open file with params
 	f, err := os.Open(obj.fileName)
@@ -359,6 +397,11 @@ func (obj *ParamsObj) deleteValue(n string) error {
 
 	if err != nil {
 		return err
+	}
+
+	// now no errors - remove value from cache
+	if obj.useCache {
+		delete(obj.cachedData, n)
 	}
 
 	return nil
