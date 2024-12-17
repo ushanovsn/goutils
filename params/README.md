@@ -33,7 +33,7 @@ File of parameters will be readed or created new if not exists. When reading exi
     ```
     * n - parameter name, the name starting with letter, can consist of letters, numbers, and symbols "-", "_";
     * val - returning value;
-    
+
 
 4. Delete value from file, returns nil if the process was completed successfully
 
@@ -41,4 +41,24 @@ File of parameters will be readed or created new if not exists. When reading exi
     DeleteValue(n string) (err error)
     ```
     * n - parameter name;
-    
+
+
+5. Enabling caching for parameters object
+
+    ```GO
+    EnableCache()
+    ```
+
+
+6. Disabling caching for parameters object and remove existing cached data
+
+    ```GO
+    DisableCache()
+    ```
+
+
+7. Clear cached data
+
+    ```GO
+    ClearCache()
+    ```
